@@ -1,3 +1,7 @@
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://choosealicense.com/licenses/mit/)
+[![Build Status](https://travis-ci.org/brandonstevens/terraform-provider-sumologic.svg)](https://travis-ci.org/brandonstevens/terraform-provider-sumologic)
+[![Go Report Card](https://goreportcard.com/badge/github.com/brandonstevens/terraform-provider-sumologic)](https://goreportcard.com/report/github.com/brandonstevens/terraform-provider-sumologic)
+
 Terraform Provider
 ==================
 
