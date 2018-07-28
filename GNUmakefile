@@ -6,6 +6,9 @@ default: build
 build: fmtcheck
 	go install
 
+bin: fmtcheck
+	gox -os "freebsd darwin linux windows" -arch "386 amd64"
+
 test: fmtcheck
 	go test -i $(TEST) || exit 1
 	echo $(TEST) | \
@@ -35,4 +38,4 @@ errcheck:
 vendor-status:
 	@govendor status
 
-.PHONY: build test testacc vet fmt fmtcheck errcheck vendor-status
+.PHONY: build bin test testacc vet fmt fmtcheck errcheck vendor-status
