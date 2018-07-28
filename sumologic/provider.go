@@ -23,7 +23,8 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"sumologic_hosted_collector": resourceHostedCollector(),
+			"sumologic_hosted_collector":      resourceHostedCollector(),
+			"sumologic_aws_cloudtrail_source": resourceAWSCloudTrailSource(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
