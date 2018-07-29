@@ -7,7 +7,7 @@ build: fmtcheck
 	go install
 
 bin: fmtcheck
-	gox -os "freebsd darwin linux windows" -arch "386 amd64"
+	@sh -c "'$(CURDIR)/scripts/build.sh'"
 
 test: fmtcheck
 	go test -i $(TEST) || exit 1
