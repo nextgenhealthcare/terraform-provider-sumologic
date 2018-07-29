@@ -8,4 +8,5 @@ You will also need to generate a set of access keys and Base64 encode them. It's
 
 Additionally, you will need to know your API endpoint URL. Sumo Logic has several deployments that are assigned depending on the geographic location and the date an account is created. For more information, see [Sumo Logic Endpoints and Firewall Security](https://help.sumologic.com/APIs/General-API-Information/Sumo-Logic-Endpoints-and-Firewall-Security)
 
+* [Creating an AWS CloudTrail Source in Sumo Logic](aws-cloudtrail-source/README.md)
 * [Creating a Hosted Collector in Sumo Logic](hosted-collector/README.md)
