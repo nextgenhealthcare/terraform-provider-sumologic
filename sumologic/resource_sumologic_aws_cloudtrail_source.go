@@ -2,8 +2,10 @@ package sumologic
 
 import (
 	"github.com/brandonstevens/sumologic-sdk-go"
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"strconv"
+	"time"
 )
 
 func resourceAWSCloudTrailSource() *schema.Resource {
@@ -154,10 +156,22 @@ func resourceAWSCloudTrailSourceCreate(d *schema.ResourceData, m interface{}) er
 	}
 	s.ThirdPartyRef.Resources = append(s.ThirdPartyRef.Resources, a)
 
-	source, err := client.CreateAWSCloudTrailSource(d.Get("collector_id").(int), s)
+	// Retry due to IAM eventual consistency
+	var out *sumologic.AWSCloudTrailSource
+	err := resource.Retry(2*time.Minute, func() *resource.RetryError {
+		var err error
+		out, err = client.CreateAWSCloudTrailSource(d.Get("collector_id").(int), s)
+
+		if err == sumologic.ErrAwsAuthenticationError {
+			return resource.RetryableError(err)
+		}
+		return resource.NonRetryableError(err)
+	})
 	if err != nil {
 		return err
 	}
+
+	source := *out
 
 	d.SetId(strconv.Itoa(source.ID))
 
@@ -230,10 +244,22 @@ func resourceAWSCloudTrailSourceUpdate(d *schema.ResourceData, m interface{}) er
 
 	_, etag, _ := client.GetAWSCloudTrailSource(d.Get("collector_id").(int), id)
 
-	updatedSource, err := client.UpdateAWSCloudTrailSource(d.Get("collector_id").(int), source, etag)
+	// Retry due to IAM eventual consistency
+	var out *sumologic.AWSCloudTrailSource
+	err := resource.Retry(2*time.Minute, func() *resource.RetryError {
+		var err error
+		out, err = client.UpdateAWSCloudTrailSource(d.Get("collector_id").(int), source, etag)
+
+		if err == sumologic.ErrAwsAuthenticationError {
+			return resource.RetryableError(err)
+		}
+		return resource.NonRetryableError(err)
+	})
 	if err != nil {
 		return err
 	}
+
+	updatedSource := *out
 
 	d.SetId(strconv.Itoa(updatedSource.ID))
 
