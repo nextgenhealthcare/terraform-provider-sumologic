@@ -16,10 +16,11 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.EnvDefaultFunc("SUMOLOGIC_AUTH_TOKEN", nil),
 			},
 			"endpoint_url": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Sumo Logic API Endpoint URL.",
-				DefaultFunc: schema.EnvDefaultFunc("SUMOLOGIC_ENDPOINT_URL", "https://api.sumologic.com/api/v1/"),
+				Type:         schema.TypeString,
+				Required:     true,
+				Description:  "Sumo Logic API Endpoint URL.",
+				DefaultFunc:  schema.EnvDefaultFunc("SUMOLOGIC_ENDPOINT_URL", nil),
+				InputDefault: "https://api.sumologic.com/api/v1/",
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
