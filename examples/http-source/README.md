@@ -1,6 +1,6 @@
-## Creating a Hosted Collector in Sumo Logic
+## Creating an HTTP Source in Sumo Logic
 
-This example provides sample configuration for creating a hosted collector.
+This example provides sample configuration for creating an HTTP source.
 
 Initialize by running `terraform init`.
 
