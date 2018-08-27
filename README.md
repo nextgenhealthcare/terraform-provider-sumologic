@@ -1,6 +1,6 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://choosealicense.com/licenses/mit/)
-[![Build Status](https://travis-ci.org/brandonstevens/terraform-provider-sumologic.svg)](https://travis-ci.org/brandonstevens/terraform-provider-sumologic)
-[![Go Report Card](https://goreportcard.com/badge/github.com/brandonstevens/terraform-provider-sumologic)](https://goreportcard.com/report/github.com/brandonstevens/terraform-provider-sumologic)
+[![Build Status](https://travis-ci.org/nextgenhealthcare/terraform-provider-sumologic.svg)](https://travis-ci.org/nextgenhealthcare/terraform-provider-sumologic)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nextgenhealthcare/terraform-provider-sumologic)](https://goreportcard.com/report/github.com/nextgenhealthcare/terraform-provider-sumologic)
 
 Terraform Provider
 ==================
@@ -15,17 +15,17 @@ Requirements
 Building The Provider
 ---------------------
 
-Clone repository to: `$GOPATH/src/github.com/brandonstevens/terraform-provider-sumologic`
+Clone repository to: `$GOPATH/src/github.com/nextgenhealthcare/terraform-provider-sumologic`
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/brandonstevens; cd $GOPATH/src/github.com/brandonstevens
-$ git clone git@github.com:brandonstevens/terraform-provider-sumologic
+$ mkdir -p $GOPATH/src/github.com/nextgenhealthcare; cd $GOPATH/src/github.com/nextgenhealthcare
+$ git clone git@github.com:nextgenhealthcare/terraform-provider-sumologic
 ```
 
 Enter the provider directory and build the provider
 
 ```sh
-$ cd $GOPATH/src/github.com/brandonstevens/terraform-provider-sumologic
+$ cd $GOPATH/src/github.com/nextgenhealthcare/terraform-provider-sumologic
 $ make build
 ```
 

@@ -1,8 +1,8 @@
 package sumologic
 
 import (
-	"github.com/brandonstevens/sumologic-sdk-go"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/nextgenhealthcare/sumologic-sdk-go"
 	"strconv"
 )
 

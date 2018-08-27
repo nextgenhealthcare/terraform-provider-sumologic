@@ -1,9 +1,9 @@
 package sumologic
 
 import (
-	"github.com/brandonstevens/sumologic-sdk-go"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/nextgenhealthcare/sumologic-sdk-go"
 )
 
 func Provider() terraform.ResourceProvider {
