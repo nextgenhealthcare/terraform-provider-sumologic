@@ -227,12 +227,6 @@
 			"revisionTime": "2018-01-26T22:14:23Z"
 		},
 		{
-			"checksumSHA1": "9vdw/5NBAI0Cazhc/7bcDrNTPJI=",
-			"path": "github.com/brandonstevens/sumologic-sdk-go",
-			"revision": "c7fc76d76dcd59b14819d4111edc32138ba9bf40",
-			"revisionTime": "2018-08-18T12:56:30Z"
-		},
-		{
 			"checksumSHA1": "/5cvgU+J4l7EhMXTK76KaCAfOuU=",
 			"origin": "github.com/hashicorp/terraform/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
@@ -712,6 +706,12 @@
 			"revisionTime": "2018-01-26T22:14:23Z"
 		},
 		{
+			"checksumSHA1": "XDebk0wCLaGno/vKtrGwir4G5mw=",
+			"path": "github.com/nextgenhealthcare/sumologic-sdk-go",
+			"revision": "719ed4cb64fe6dbe21e731a7e84e4df3d9eb25d4",
+			"revisionTime": "2018-08-27T17:47:43Z"
+		},
+		{
 			"checksumSHA1": "Sfxv8SV6j8m6YD+hwvlMJjq2zfg=",
 			"origin": "github.com/hashicorp/terraform/vendor/github.com/oklog/run",
 			"path": "github.com/oklog/run",
@@ -1146,5 +1146,5 @@
 			"revisionTime": "2018-01-26T22:14:23Z"
 		}
 	],
-	"rootPath": "github.com/brandonstevens/terraform-provider-sumologic"
+	"rootPath": "github.com/nextgenhealthcare/terraform-provider-sumologic"
 }

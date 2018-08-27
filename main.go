@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/brandonstevens/terraform-provider-sumologic/sumologic"
 	"github.com/hashicorp/terraform/plugin"
+	"github.com/nextgenhealthcare/terraform-provider-sumologic/sumologic"
 )
 
 func main() {

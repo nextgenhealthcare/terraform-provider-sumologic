@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/brandonstevens/sumologic-sdk-go"
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/nextgenhealthcare/sumologic-sdk-go"
 )
 
 func TestAccSumoLogicAWSCloudTrailSource_basic(t *testing.T) {
