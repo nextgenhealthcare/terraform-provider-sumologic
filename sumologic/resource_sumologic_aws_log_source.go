@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-func resourceAWSCloudTrailSource() *schema.Resource {
+func resourceAWSLogSource() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAWSCloudTrailSourceCreate,
-		Read:   resourceAWSCloudTrailSourceRead,
-		Update: resourceAWSCloudTrailSourceUpdate,
-		Delete: resourceAWSCloudTrailSourceDelete,
+		Create: resourceAWSLogSourceCreate,
+		Read:   resourceAWSLogSourceRead,
+		Update: resourceAWSLogSourceUpdate,
+		Delete: resourceAWSLogSourceDelete,
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -125,10 +125,10 @@ func resourceAWSCloudTrailSource() *schema.Resource {
 	}
 }
 
-func resourceAWSCloudTrailSourceCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAWSLogSourceCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*sumologic.Client)
 
-	s := sumologic.AWSCloudTrailSource{
+	s := sumologic.AWSLogSource{
 		Name:               d.Get("name").(string),
 		SourceType:         d.Get("source_type").(string),
 		ScanInterval:       d.Get("scan_interval").(int),
@@ -157,10 +157,10 @@ func resourceAWSCloudTrailSourceCreate(d *schema.ResourceData, m interface{}) er
 	s.ThirdPartyRef.Resources = append(s.ThirdPartyRef.Resources, a)
 
 	// Retry due to IAM eventual consistency
-	var out *sumologic.AWSCloudTrailSource
+	var out *sumologic.AWSLogSource
 	err := resource.Retry(2*time.Minute, func() *resource.RetryError {
 		var err error
-		out, err = client.CreateAWSCloudTrailSource(d.Get("collector_id").(int), s)
+		out, err = client.CreateAWSLogSource(d.Get("collector_id").(int), s)
 
 		if err == sumologic.ErrAwsAuthenticationError {
 			return resource.RetryableError(err)
@@ -175,14 +175,14 @@ func resourceAWSCloudTrailSourceCreate(d *schema.ResourceData, m interface{}) er
 
 	d.SetId(strconv.Itoa(source.ID))
 
-	return resourceAWSCloudTrailSourceUpdate(d, m)
+	return resourceAWSLogSourceUpdate(d, m)
 }
 
-func resourceAWSCloudTrailSourceRead(d *schema.ResourceData, m interface{}) error {
+func resourceAWSLogSourceRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*sumologic.Client)
 
 	id, _ := strconv.Atoi(d.Id())
-	source, _, err := client.GetAWSCloudTrailSource(d.Get("collector_id").(int), id)
+	source, _, err := client.GetAWSLogSource(d.Get("collector_id").(int), id)
 	if err == sumologic.ErrSourceNotFound {
 		d.SetId("")
 		return nil
@@ -209,11 +209,11 @@ func resourceAWSCloudTrailSourceRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAWSCloudTrailSourceUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAWSLogSourceUpdate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*sumologic.Client)
 
 	id, _ := strconv.Atoi(d.Id())
-	source := sumologic.AWSCloudTrailSource{
+	source := sumologic.AWSLogSource{
 		ID:                 id,
 		Name:               d.Get("name").(string),
 		SourceType:         d.Get("source_type").(string),
@@ -242,13 +242,13 @@ func resourceAWSCloudTrailSourceUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	source.ThirdPartyRef.Resources = append(source.ThirdPartyRef.Resources, a)
 
-	_, etag, _ := client.GetAWSCloudTrailSource(d.Get("collector_id").(int), id)
+	_, etag, _ := client.GetAWSLogSource(d.Get("collector_id").(int), id)
 
 	// Retry due to IAM eventual consistency
-	var out *sumologic.AWSCloudTrailSource
+	var out *sumologic.AWSLogSource
 	err := resource.Retry(2*time.Minute, func() *resource.RetryError {
 		var err error
-		out, err = client.UpdateAWSCloudTrailSource(d.Get("collector_id").(int), source, etag)
+		out, err = client.UpdateAWSLogSource(d.Get("collector_id").(int), source, etag)
 
 		if err == sumologic.ErrAwsAuthenticationError {
 			return resource.RetryableError(err)
@@ -263,14 +263,14 @@ func resourceAWSCloudTrailSourceUpdate(d *schema.ResourceData, m interface{}) er
 
 	d.SetId(strconv.Itoa(updatedSource.ID))
 
-	return resourceAWSCloudTrailSourceRead(d, m)
+	return resourceAWSLogSourceRead(d, m)
 }
 
-func resourceAWSCloudTrailSourceDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAWSLogSourceDelete(d *schema.ResourceData, m interface{}) error {
 	client := m.(*sumologic.Client)
 
 	id, _ := strconv.Atoi(d.Id())
-	err := client.DeleteAWSCloudTrailSource(d.Get("collector_id").(int), id)
+	err := client.DeleteAWSLogSource(d.Get("collector_id").(int), id)
 	if err != nil {
 		return err
 	}
