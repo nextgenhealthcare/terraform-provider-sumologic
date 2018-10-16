@@ -1,8 +1,8 @@
 resource "sumologic_hosted_collector" "example" {
-    name = "example-${random_pet.name.id}"
+  name = "example-${random_pet.name.id}"
 }
 
-resource "sumologic_aws_cloudtrail_source" "example" {
+resource "sumologic_aws_log_source" "example" {
   name                 = "CloudTrail"
   collector_id         = "${sumologic_hosted_collector.example.id}"
   category             = "cloudtrail/example"
