@@ -1,6 +1,8 @@
 resource "aws_s3_bucket" "security_logs" {
   bucket = "terraform-provider-sumologic-cloudtrail-${random_pet.name.id}"
 
+  force_destroy = true
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
