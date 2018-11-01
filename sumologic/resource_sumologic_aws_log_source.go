@@ -61,6 +61,21 @@ func resourceAWSLogSource() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"multiline_processing_enabled": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+			"use_autoline_matching": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+			"manual_prefix_regexp": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"third_party_ref": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
@@ -129,15 +144,18 @@ func resourceAWSLogSourceCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*sumologic.Client)
 
 	s := sumologic.AWSLogSource{
-		Name:               d.Get("name").(string),
-		SourceType:         d.Get("source_type").(string),
-		ScanInterval:       d.Get("scan_interval").(int),
-		ContentType:        d.Get("content_type").(string),
-		Description:        d.Get("description").(string),
-		Category:           d.Get("category").(string),
-		TimeZone:           d.Get("timezone").(string),
-		Paused:             d.Get("paused").(bool),
-		CutoffRelativeTime: d.Get("cutoff_relative_time").(string),
+		Name:                       d.Get("name").(string),
+		SourceType:                 d.Get("source_type").(string),
+		ScanInterval:               d.Get("scan_interval").(int),
+		ContentType:                d.Get("content_type").(string),
+		Description:                d.Get("description").(string),
+		Category:                   d.Get("category").(string),
+		TimeZone:                   d.Get("timezone").(string),
+		Paused:                     d.Get("paused").(bool),
+		CutoffRelativeTime:         d.Get("cutoff_relative_time").(string),
+		MultilineProcessingEnabled: d.Get("multiline_processing_enabled").(bool),
+		UseAutolineMatching:        d.Get("use_autoline_matching").(bool),
+		ManualPrefixRegexp:         d.Get("manual_prefix_regexp").(string),
 		ThirdPartyRef: sumologic.AWSBucketThirdPartyRef{
 			Resources: make([]sumologic.AWSBucketResource, 0),
 		},
@@ -199,6 +217,9 @@ func resourceAWSLogSourceRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("category", source.Category)
 	d.Set("timezone", source.TimeZone)
 	d.Set("paused", source.Paused)
+	d.Set("multiline_processing_enabled", source.MultilineProcessingEnabled)
+	d.Set("use_autoline_matching", source.UseAutolineMatching)
+	d.Set("manual_prefix_regexp", source.ManualPrefixRegexp)
 	d.Set("third_party_ref.0.resources.0.service_type", source.ThirdPartyRef.Resources[0].ServiceType)
 	d.Set("third_party_ref.0.resources.0.path.0.type", source.ThirdPartyRef.Resources[0].Path.Type)
 	d.Set("third_party_ref.0.resources.0.path.0.bucket_name", source.ThirdPartyRef.Resources[0].Path.BucketName)
@@ -214,16 +235,19 @@ func resourceAWSLogSourceUpdate(d *schema.ResourceData, m interface{}) error {
 
 	id, _ := strconv.Atoi(d.Id())
 	source := sumologic.AWSLogSource{
-		ID:                 id,
-		Name:               d.Get("name").(string),
-		SourceType:         d.Get("source_type").(string),
-		ScanInterval:       d.Get("scan_interval").(int),
-		ContentType:        d.Get("content_type").(string),
-		Description:        d.Get("description").(string),
-		Category:           d.Get("category").(string),
-		TimeZone:           d.Get("timezone").(string),
-		Paused:             d.Get("paused").(bool),
-		CutoffRelativeTime: d.Get("cutoff_relative_time").(string),
+		ID:                         id,
+		Name:                       d.Get("name").(string),
+		SourceType:                 d.Get("source_type").(string),
+		ScanInterval:               d.Get("scan_interval").(int),
+		ContentType:                d.Get("content_type").(string),
+		Description:                d.Get("description").(string),
+		Category:                   d.Get("category").(string),
+		TimeZone:                   d.Get("timezone").(string),
+		Paused:                     d.Get("paused").(bool),
+		CutoffRelativeTime:         d.Get("cutoff_relative_time").(string),
+		MultilineProcessingEnabled: d.Get("multiline_processing_enabled").(bool),
+		UseAutolineMatching:        d.Get("use_autoline_matching").(bool),
+		ManualPrefixRegexp:         d.Get("manual_prefix_regexp").(string),
 		ThirdPartyRef: sumologic.AWSBucketThirdPartyRef{
 			Resources: make([]sumologic.AWSBucketResource, 0),
 		},
