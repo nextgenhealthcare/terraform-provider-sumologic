@@ -49,7 +49,17 @@ func resourceHTTPSource() *schema.Resource {
 			"multiline_processing_enabled": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true,
+				Computed: true,
+			},
+			"use_autoline_matching": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+			"manual_prefix_regexp": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"url": &schema.Schema{
 				Type:     schema.TypeString,
@@ -70,6 +80,8 @@ func resourceHTTPSourceCreate(d *schema.ResourceData, m interface{}) error {
 		TimeZone:                   d.Get("timezone").(string),
 		MessagePerRequest:          d.Get("message_per_request").(bool),
 		MultilineProcessingEnabled: d.Get("multiline_processing_enabled").(bool),
+		UseAutolineMatching:        d.Get("use_autoline_matching").(bool),
+		ManualPrefixRegexp:         d.Get("manual_prefix_regexp").(string),
 	})
 	if err != nil {
 		return err
@@ -100,6 +112,8 @@ func resourceHTTPSourceRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("timezone", source.TimeZone)
 	d.Set("message_per_request", source.MessagePerRequest)
 	d.Set("multiline_processing_enabled", source.MultilineProcessingEnabled)
+	d.Set("use_autoline_matching", source.UseAutolineMatching)
+	d.Set("manual_prefix_regexp", source.ManualPrefixRegexp)
 	d.Set("url", source.Url)
 
 	return nil
@@ -118,6 +132,8 @@ func resourceHTTPSourceUpdate(d *schema.ResourceData, m interface{}) error {
 		TimeZone:                   d.Get("timezone").(string),
 		MessagePerRequest:          d.Get("message_per_request").(bool),
 		MultilineProcessingEnabled: d.Get("multiline_processing_enabled").(bool),
+		UseAutolineMatching:        d.Get("use_autoline_matching").(bool),
+		ManualPrefixRegexp:         d.Get("manual_prefix_regexp").(string),
 	}
 
 	_, etag, _ := client.GetHTTPSource(d.Get("collector_id").(int), id)
