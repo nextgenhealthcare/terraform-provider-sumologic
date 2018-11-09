@@ -75,3 +75,12 @@ resource "aws_cloudtrail" "sumologic" {
   is_multi_region_trail      = true
   enable_log_file_validation = true
 }
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = "${aws_s3_bucket.security_logs.id}"
+
+  topic {
+    topic_arn = "${aws_sns_topic.s3_updates.arn}"
+    events    = ["s3:ObjectCreated:*"]
+  }
+}
