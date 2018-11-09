@@ -19,7 +19,7 @@ data "aws_iam_policy_document" "sumologic_assume_role_policy" {
 }
 
 resource "aws_iam_role" "sumologic" {
-  name = "SumoLogicLogAccess2"
+  name = "SumoLogicLogAccess"
 
   assume_role_policy = "${data.aws_iam_policy_document.sumologic_assume_role_policy.json}"
 }

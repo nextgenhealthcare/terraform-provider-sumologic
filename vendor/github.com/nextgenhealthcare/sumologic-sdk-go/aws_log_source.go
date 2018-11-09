@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
 )
 
 // AWSLogSource is a necessary wrapper for source API calls.
@@ -30,6 +31,7 @@ type AWSLogSource struct {
 	MultilineProcessingEnabled bool                   `json:"multilineProcessingEnabled,omitempty"`
 	UseAutolineMatching        bool                   `json:"useAutolineMatching,omitempty"`
 	ManualPrefixRegexp         string                 `json:"manualPrefixRegexp,omitempty"`
+	Url                        string                 `json:"url,omitempty"`
 	ThirdPartyRef              AWSBucketThirdPartyRef `json:"thirdPartyRef,omitempty"`
 }
 
@@ -136,6 +138,9 @@ func (s *Client) CreateAWSLogSource(collectorID int, source AWSLogSource) (*AWSL
 		}
 		if e.Message == "Cannot authenticate with AWS." ||
 			e.Message == "Invalid IAM role: 'errorCode=AccessDenied'." {
+			return nil, ErrAwsAuthenticationError
+		}
+		if matched, _ := regexp.MatchString("The S3 bucket 'bucketName=.*' is not readable.", e.Message); matched {
 			return nil, ErrAwsAuthenticationError
 		}
 		return nil, fmt.Errorf("Bad Request. %s", e.Message)

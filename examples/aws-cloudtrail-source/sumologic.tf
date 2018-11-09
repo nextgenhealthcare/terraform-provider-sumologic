@@ -3,11 +3,14 @@ resource "sumologic_hosted_collector" "example" {
 }
 
 resource "sumologic_aws_log_source" "example" {
+  # SumoLogic will error if the IAM policy isn't attached yet
+  depends_on = ["aws_iam_role_policy_attachment.sumologic"]
+
   name                 = "CloudTrail"
   collector_id         = "${sumologic_hosted_collector.example.id}"
   category             = "cloudtrail/example"
   source_type          = "Polling"
-  scan_interval        = 60000
+  scan_interval        = -1
   content_type         = "AwsCloudTrailBucket"
   cutoff_relative_time = "-0h"
 

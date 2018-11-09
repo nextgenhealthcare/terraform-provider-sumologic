@@ -76,6 +76,11 @@ func resourceAWSLogSource() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"url": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"third_party_ref": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
@@ -156,6 +161,7 @@ func resourceAWSLogSourceCreate(d *schema.ResourceData, m interface{}) error {
 		MultilineProcessingEnabled: d.Get("multiline_processing_enabled").(bool),
 		UseAutolineMatching:        d.Get("use_autoline_matching").(bool),
 		ManualPrefixRegexp:         d.Get("manual_prefix_regexp").(string),
+		Url:                        d.Get("url").(string),
 		ThirdPartyRef: sumologic.AWSBucketThirdPartyRef{
 			Resources: make([]sumologic.AWSBucketResource, 0),
 		},
@@ -220,6 +226,7 @@ func resourceAWSLogSourceRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("multiline_processing_enabled", source.MultilineProcessingEnabled)
 	d.Set("use_autoline_matching", source.UseAutolineMatching)
 	d.Set("manual_prefix_regexp", source.ManualPrefixRegexp)
+	d.Set("url", source.Url)
 	d.Set("third_party_ref.0.resources.0.service_type", source.ThirdPartyRef.Resources[0].ServiceType)
 	d.Set("third_party_ref.0.resources.0.path.0.type", source.ThirdPartyRef.Resources[0].Path.Type)
 	d.Set("third_party_ref.0.resources.0.path.0.bucket_name", source.ThirdPartyRef.Resources[0].Path.BucketName)
@@ -248,6 +255,7 @@ func resourceAWSLogSourceUpdate(d *schema.ResourceData, m interface{}) error {
 		MultilineProcessingEnabled: d.Get("multiline_processing_enabled").(bool),
 		UseAutolineMatching:        d.Get("use_autoline_matching").(bool),
 		ManualPrefixRegexp:         d.Get("manual_prefix_regexp").(string),
+		Url:                        d.Get("url").(string),
 		ThirdPartyRef: sumologic.AWSBucketThirdPartyRef{
 			Resources: make([]sumologic.AWSBucketResource, 0),
 		},
