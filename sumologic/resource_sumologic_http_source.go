@@ -49,12 +49,12 @@ func resourceHTTPSource() *schema.Resource {
 			"multiline_processing_enabled": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
-				Computed: true,
+				Default:  false,
 			},
 			"use_autoline_matching": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
-				Computed: true,
+				Default:  false,
 			},
 			"manual_prefix_regexp": &schema.Schema{
 				Type:     schema.TypeString,
@@ -65,6 +65,27 @@ func resourceHTTPSource() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"filter": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"filter_type": &schema.Schema{
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: filterTypeValidation,
+						},
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"regexp": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -72,7 +93,7 @@ func resourceHTTPSource() *schema.Resource {
 func resourceHTTPSourceCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*sumologic.Client)
 
-	source, err := client.CreateHTTPSource(d.Get("collector_id").(int), sumologic.HTTPSource{
+	s := sumologic.HTTPSource{
 		Name:                       d.Get("name").(string),
 		SourceType:                 d.Get("source_type").(string),
 		Description:                d.Get("description").(string),
@@ -82,7 +103,15 @@ func resourceHTTPSourceCreate(d *schema.ResourceData, m interface{}) error {
 		MultilineProcessingEnabled: d.Get("multiline_processing_enabled").(bool),
 		UseAutolineMatching:        d.Get("use_autoline_matching").(bool),
 		ManualPrefixRegexp:         d.Get("manual_prefix_regexp").(string),
-	})
+		Filters:                    make([]sumologic.Filter, 0),
+	}
+
+	sumologicFilters := d.Get("filter").(*schema.Set).List()
+
+	s.Filters = appendFilters(sumologicFilters)
+
+	source, err := client.CreateHTTPSource(d.Get("collector_id").(int), s)
+
 	if err != nil {
 		return err
 	}
@@ -115,6 +144,7 @@ func resourceHTTPSourceRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("use_autoline_matching", source.UseAutolineMatching)
 	d.Set("manual_prefix_regexp", source.ManualPrefixRegexp)
 	d.Set("url", source.Url)
+	d.Set("filter", source.Filters)
 
 	return nil
 }
@@ -134,7 +164,12 @@ func resourceHTTPSourceUpdate(d *schema.ResourceData, m interface{}) error {
 		MultilineProcessingEnabled: d.Get("multiline_processing_enabled").(bool),
 		UseAutolineMatching:        d.Get("use_autoline_matching").(bool),
 		ManualPrefixRegexp:         d.Get("manual_prefix_regexp").(string),
+		Filters:                    make([]sumologic.Filter, 0),
 	}
+
+	sumologicFilters := d.Get("filter").(*schema.Set).List()
+
+	source.Filters = appendFilters(sumologicFilters)
 
 	_, etag, _ := client.GetHTTPSource(d.Get("collector_id").(int), id)
 

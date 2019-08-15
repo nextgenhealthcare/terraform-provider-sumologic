@@ -1,10 +1,12 @@
 package sumologic
 
 import (
+	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/nextgenhealthcare/sumologic-sdk-go"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -54,7 +56,7 @@ func resourceAWSLogSource() *schema.Resource {
 			"paused": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
-				Computed: true,
+				Default:  false,
 			},
 			"cutoff_relative_time": &schema.Schema{
 				Type:     schema.TypeString,
@@ -64,12 +66,12 @@ func resourceAWSLogSource() *schema.Resource {
 			"multiline_processing_enabled": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
-				Computed: true,
+				Default:  false,
 			},
 			"use_autoline_matching": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
-				Computed: true,
+				Default:  false,
 			},
 			"manual_prefix_regexp": &schema.Schema{
 				Type:     schema.TypeString,
@@ -80,6 +82,27 @@ func resourceAWSLogSource() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"filter": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"filter_type": &schema.Schema{
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: filterTypeValidation,
+						},
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"regexp": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
 			"third_party_ref": {
 				Type:     schema.TypeList,
@@ -165,7 +188,9 @@ func resourceAWSLogSourceCreate(d *schema.ResourceData, m interface{}) error {
 		ThirdPartyRef: sumologic.AWSBucketThirdPartyRef{
 			Resources: make([]sumologic.AWSBucketResource, 0),
 		},
+		Filters: make([]sumologic.Filter, 0),
 	}
+
 	a := sumologic.AWSBucketResource{
 		ServiceType: d.Get("third_party_ref.0.resources.0.service_type").(string),
 		Path: sumologic.AWSBucketPath{
@@ -178,7 +203,12 @@ func resourceAWSLogSourceCreate(d *schema.ResourceData, m interface{}) error {
 			RoleARN: d.Get("third_party_ref.0.resources.0.authentication.0.role_arn").(string),
 		},
 	}
+
 	s.ThirdPartyRef.Resources = append(s.ThirdPartyRef.Resources, a)
+
+	sumologicFilters := d.Get("filter").(*schema.Set).List()
+
+	s.Filters = appendFilters(sumologicFilters)
 
 	// Retry due to IAM eventual consistency
 	var out *sumologic.AWSLogSource
@@ -233,6 +263,7 @@ func resourceAWSLogSourceRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("third_party_ref.0.resources.0.path.0.path_expression", source.ThirdPartyRef.Resources[0].Path.PathExpression)
 	d.Set("third_party_ref.0.resources.0.authentication.0.type", source.ThirdPartyRef.Resources[0].Authentication.Type)
 	d.Set("third_party_ref.0.resources.0.authentication.0.role_arn", source.ThirdPartyRef.Resources[0].Authentication.RoleARN)
+	d.Set("filter", source.Filters)
 
 	return nil
 }
@@ -259,6 +290,7 @@ func resourceAWSLogSourceUpdate(d *schema.ResourceData, m interface{}) error {
 		ThirdPartyRef: sumologic.AWSBucketThirdPartyRef{
 			Resources: make([]sumologic.AWSBucketResource, 0),
 		},
+		Filters: make([]sumologic.Filter, 0),
 	}
 	a := sumologic.AWSBucketResource{
 		ServiceType: d.Get("third_party_ref.0.resources.0.service_type").(string),
@@ -273,6 +305,10 @@ func resourceAWSLogSourceUpdate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 	source.ThirdPartyRef.Resources = append(source.ThirdPartyRef.Resources, a)
+
+	sumologicFilters := d.Get("filter").(*schema.Set).List()
+
+	source.Filters = appendFilters(sumologicFilters)
 
 	_, etag, _ := client.GetAWSLogSource(d.Get("collector_id").(int), id)
 
@@ -310,4 +346,16 @@ func resourceAWSLogSourceDelete(d *schema.ResourceData, m interface{}) error {
 	d.SetId("")
 
 	return nil
+}
+
+func filterTypeValidation(val interface{}, key string) (warns []string, errs []error) {
+	v := strings.ToLower(val.(string))
+	valid_types := [5]string{"exclude", "include", "mask", "hash", "forward"}
+	for _, t := range valid_types {
+		if t == v {
+			return
+		}
+	}
+	errs = append(errs, fmt.Errorf("filter_type must be one of %v. Found %v", valid_types, v))
+	return
 }

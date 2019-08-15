@@ -81,6 +81,17 @@ resource "sumologic_http_source" "source" {
   name = "test"
   collector_id = "${sumologic_hosted_collector.collector.id}"
 	source_type = "HTTP"
+	filter {
+    filter_type = "Exclude"
+    name = "No INFO"
+    regexp = "(?s).*\\[INFO\\].*(?s)" 
+  }
+
+  filter {
+    filter_type = "Exclude"
+    name = "No DEBUG"
+    regexp = "(?s).*\\[DEBUG\\].*(?s)" 
+  }
 }
 `, r)
 }
