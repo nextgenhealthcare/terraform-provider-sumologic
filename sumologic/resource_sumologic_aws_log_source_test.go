@@ -137,6 +137,17 @@ resource "sumologic_aws_log_source" "source" {
         role_arn = "%[4]s"
       }
     }
+	}
+	filter {
+    filter_type = "Exclude"
+    name = "No INFO"
+    regexp = "(?s).*\\[INFO\\].*(?s)" 
+  }
+
+  filter {
+    filter_type = "Exclude"
+    name = "No DEBUG"
+    regexp = "(?s).*\\[DEBUG\\].*(?s)" 
   }
 }
 `, r, sumoLogicLogContentType, awsS3Bucket, awsSumoLogicIAMRoleArn)
